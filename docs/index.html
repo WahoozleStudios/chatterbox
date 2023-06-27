@@ -55,12 +55,27 @@
         <button onclick="getInput()">Login</button>
     </div>
     <script>
+        function login(username) {
+            localStorage.setItem('currentUsername', username);
+            window.location.replace("home.html");
+        }
+
         function getInput() {
             var usernameEntryId = document.getElementById("usernameEntry");
             var usernameTry = usernameEntryId.value;
 
             var passwordEntryId = document.getElementById("passwordEntry");
             var passwordTry = passwordEntryId.value;
+
+            if (usernameTry == "") {
+                console.log("Username Entry Empty");
+            } else if (passwordTry == "") {
+                console.log("Password Entry Empty");
+            } else if (usernameTry == "zacmoon" && passwordTry == "chelmer27") {
+                login(usernameTry);
+            } else if (usernameTry == "a" && passwordTry == "s") {
+                login("QuickAccess");
+            }
 
             console.log(usernameTry);
             console.log(passwordTry);
