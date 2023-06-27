@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>HOME</title>
+    <title>ChatterBox Login</title>
     <link rel="icon" type="image/png" href="imgs/favicon.ico">
     <style>
         @font-face {
@@ -13,14 +13,16 @@
             margin: 0;
         }
 
-        /* CSS for the top navigation */
         .topnav {
+            position: fixed;
+            top: 0;
             background-color: #333;
             overflow: hidden;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 0 16px;
+            width: 100%;
         }
 
         .topnav a {
@@ -28,7 +30,7 @@
             text-align: center;
             padding: 14px 0;
             text-decoration: none;
-            font-size: 17px;
+            font-size: 20px;
         }
 
         .topnav a:hover {
@@ -40,24 +42,61 @@
             background-color: #4CAF50;
             color: white;
         }
+        .topnav .icon-container:hover {
+            color: #333;
+        }
+        .topnav .icon-container {
+            height: 100%; 
+            display: flex;
+            align-items: center;
+            margin-right: 10px; 
+        }
 
         .topnav .icon {
-            margin-right: 10px;
+            height: 100%; 
+            width: auto; 
+            margin-right: 10px; 
         }
 
         .topnav .home-btn {
             margin-left: auto;
+            margin-right: 15px;
+        }
+
+        .topnav .logout-btn {
+            margin-right: 10px; 
+        }
+        #messageEntry {
+            width: 85%;
+            height: 60px;
+            position: fixed;
+            bottom: 0;
+        }
+
+        #sendBtn {
+            width: 14%;
+            height: 66px;
+            position: fixed;
+            bottom: 0;
+            right: 0;
         }
     </style>
 </head>
 <body>
     <div class="topnav">
-        <a href="#home">
-            <img src="imgs/favicon.ico" alt="Icon" class="icon">
-        </a>
+        <div class="icon-container">
+            <a href="#home">
+                <img src="imgs/favicon.ico" alt="Icon" class="icon">
+            </a>
+        </div>
         <a href="#home" class="home-btn">Home</a>
-        <a href="#logout">Log Out</a>
+        <a href="#logout" class="logout-btn">Log Out</a>
     </div>
-    <h1 id="pageTitle" align="center">HOME</h1>
+    <input placeholder="Enter message :" type="text" id="messageEntry">
+    <button id="sendBtn">Send</button>
+    <script>
+        username = localStorage.getItem('currentUsername');
+        console.log(username);
+    </script>
 </body>
 </html>
