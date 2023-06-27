@@ -25,6 +25,19 @@
             display: inline-block;
             vertical-align: middle;
         }
+        #inputs {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        input {
+            width: 300px;
+            height: 40px;
+            font-size: 18px;
+            margin-bottom: 10px;
+            padding: 5px;
+        }
     </style>
 </head>
 <body>
@@ -36,5 +49,22 @@
             </span>
         </h1>
     </div>
+    <div id="inputs">
+        <input type="text" placeholder="Enter username" id="usernameEntry">
+        <input type="password" placeholder="Enter password" id="passwordEntry">
+        <button onclick="getInput()">Login</button>
+    </div>
+    <script>
+        function getInput() {
+            var usernameEntryId = document.getElementById("usernameEntry");
+            var usernameTry = usernameEntryId.value;
+
+            var passwordEntryId = document.getElementById("passwordEntry");
+            var passwordTry = passwordEntryId.value;
+
+            console.log(usernameTry);
+            console.log(passwordTry);
+        }
+    </script>
 </body>
 </html>
