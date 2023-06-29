@@ -23,6 +23,7 @@
             align-items: center;
             padding: 0 16px;
             width: 100%;
+            z-index: 1; /* Ensure the topnav appears above other elements */
         }
 
         .topnav a {
@@ -75,6 +76,7 @@
             height: 60px;
             position: fixed;
             bottom: 0;
+            z-index: 1; /* Ensure the message entry appears above other elements */
         }
 
         #sendBtn {
@@ -83,10 +85,12 @@
             position: fixed;
             bottom: 0;
             right: 0;
+            z-index: 1; /* Ensure the send button appears above other elements */
         }
         #messagesContainer {
             margin-top: 60px;
             padding: 20px;
+            padding-bottom: 100px; /* Add padding at the bottom to prevent messages from being hidden by the message entry */
         }
         #messagesContainer p {
             margin: 0;
@@ -143,7 +147,9 @@
 
         function readFunc() {
             var messagesContainer = document.getElementById("messagesContainer");
-            messagesContainer.innerHTML = ""; 
+            messagesContainer.innerHTML = ""; // Clear the existing messages
+
+            // Read all messages from the messages collection and display them
             db.collection("messages")
                 .orderBy("number", "asc")
                 .get()
@@ -228,6 +234,25 @@
                 sendMsg();
             }
         });
+
+        // Scroll to the bottom of the page when the Home button is clicked
+        var homeBtn = document.querySelector(".home-btn");
+        homeBtn.addEventListener("click", function(event) {
+            event.preventDefault();
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+
+        // Redirect to index.html and clear the username from local storage when Logout button is clicked
+        var logoutBtn = document.querySelector(".logout-btn");
+        logoutBtn.addEventListener("click", function() {
+            localStorage.setItem('usernameTry', '');
+            window.location.replace("index.html");
+        });
+
+        // Scroll to the bottom of the page when the page loads
+        window.onload = function() {
+            window.scrollTo(0, document.body.scrollHeight);
+        };
     </script>
 </body>
 </html>
