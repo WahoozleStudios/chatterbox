@@ -4,7 +4,118 @@
     <title>ChatterBox Home</title>
     <link rel="icon" type="image/png" href="imgs/favicon.ico">
     <style>
-        /* CSS styles omitted for brevity */
+        @font-face {
+            font-family: "Martian_Mono";
+            src: url(fonts/martian_mono.ttf);
+        }
+        body {
+            font-family: "Martian_Mono", sans-serif;
+            margin: 0;
+        }
+
+        .topnav {
+            position: fixed;
+            top: 0;
+            background-color: #333;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            width: 100%;
+            z-index: 1; /* Ensure the topnav appears above other elements */
+        }
+
+        .topnav a {
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 0;
+            text-decoration: none;
+            font-size: 20px;
+        }
+
+        .topnav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .topnav a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        /* Add the following CSS to prevent color change and button behavior */
+        .topnav .icon-container:hover {
+            color: inherit;
+            cursor: default;
+        }
+
+        .topnav .icon-container {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .topnav .icon {
+            height: 100%;
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .topnav .home-btn {
+            margin-left: auto;
+            margin-right: 30px;
+        }
+
+        .topnav .logout-btn {
+            margin-right: 30px;
+        }
+        #messageEntry {
+            width: 85%;
+            height: 60px;
+            position: fixed;
+            bottom: 0;
+            z-index: 1; /* Ensure the message entry appears above other elements */
+        }
+
+        #sendBtn {
+            width: 14%;
+            height: 66px;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            z-index: 1; /* Ensure the send button appears above other elements */
+        }
+        #messagesContainer {
+            margin-top: 60px;
+            padding: 20px;
+            padding-bottom: 100px; /* Add padding at the bottom to prevent messages from being hidden by the message entry */
+        }
+        #messagesContainer p {
+            margin: 0;
+            padding: 0;
+            margin-bottom: 10px; /* Add margin between messages */
+        }
+        #messagesContainer .message {
+            background-color: #f2f2f2;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #messagesContainer .message p {
+            margin-bottom: 5px; /* Add margin between message content and user/number */
+        }
+        #messagesContainer .message .user-number {
+            font-size: 14px;
+            color: #888;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        #messagesContainer hr {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -38,9 +149,7 @@
 
         function readFunc() {
             var messagesContainer = document.getElementById("messagesContainer");
-            messagesContainer.innerHTML = ""; // Clear the existing messages
 
-            // Read all messages from the messages collection and display them
             db.collection("messages")
                 .orderBy("number", "asc")
                 .get()
@@ -50,26 +159,24 @@
                         var user = doc.data().user;
                         var number = doc.data().number;
 
-                        // Create a div element to wrap the message
+                        var existingMessage = document.getElementById("message_" + number);
+                        if (existingMessage) {
+                            return;
+                        }
+
                         var messageWrapper = document.createElement("div");
                         messageWrapper.classList.add("message");
+                        messageWrapper.id = "message_" + number;
 
-                        // Create a paragraph element to display the message content
                         var messageContent = document.createElement("p");
                         messageContent.textContent = content;
 
-                        // Create a span element to display the user and number
                         var userNumberElement = document.createElement("span");
                         userNumberElement.classList.add("user-number");
-                        userNumberElement.innerHTML = " • " + user.link("http://chatterbox.wahoozlestudios.co.uk/u/" + user) + " • #" + number;
+                        userNumberElement.textContent = " • " + user + " • #" + number;
 
-                        // Append the span element to the paragraph
                         messageContent.appendChild(userNumberElement);
-
-                        // Append the paragraph to the message wrapper
                         messageWrapper.appendChild(messageContent);
-
-                        // Append the message wrapper to the messages container
                         messagesContainer.appendChild(messageWrapper);
                     });
                 })
@@ -82,6 +189,10 @@
             var entryId = document.getElementById("messageEntry");
             var message = entryId.value;
             var usernameTry = localStorage.getItem('usernameTry');
+
+            var unsubscribe = db.collection("messages")
+                .orderBy("number", "asc")
+                .onSnapshot(function() {});
 
             db.collection("messages")
                 .orderBy("number", "desc")
@@ -96,7 +207,6 @@
                         }
                     });
 
-                    // Create a new document with incremented number value
                     db.collection("messages").add({
                         content: message,
                         user: usernameTry,
@@ -104,37 +214,27 @@
                     })
                     .then(function(docRef) {
                         console.log("Document written with ID: ", docRef.id);
-                        entryId.value = ''; // Clear the input field after sending
+                        entryId.value = '';
                     })
                     .catch(function(error) {
                         console.error("Error adding document: ", error);
                     });
-                    readFunc();
                 })
                 .catch(function(error) {
                     console.log("Error getting documents: ", error);
+                })
+                .finally(function() {
+                    unsubscribe();
                 });
         }
 
+        db.collection("messages")
+            .orderBy("number", "asc")
+            .onSnapshot(function(querySnapshot) {
+                readFunc();
+            });
+
         readFunc();
-
-        setInterval(readFunc, 10000);
-
-        var homeBtn = document.querySelector(".home-btn");
-        homeBtn.addEventListener("click", function(event) {
-            event.preventDefault();
-            window.scrollTo(0, document.body.scrollHeight);
-        });
-
-        var logoutBtn = document.querySelector(".logout-btn");
-        logoutBtn.addEventListener("click", function() {
-            localStorage.setItem('usernameTry', '');
-            window.location.replace("index.html");
-        });
-
-        window.onload = function() {
-            window.scrollTo(0, document.body.scrollHeight);
-        };
     </script>
 </body>
 </html>
