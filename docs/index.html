@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Chatterbox Login</title>
+    <title>ChatterBox Home</title>
     <link rel="icon" type="image/png" href="imgs/favicon.ico">
     <style>
         @font-face {
@@ -10,85 +10,247 @@
         }
         body {
             font-family: "Martian_Mono", sans-serif;
+            margin: 0;
         }
-        .container {
-            background-color: #f2f2f2;
-            border-radius: 10px;
-            padding: 10px;
-            width: fit-content;
-            margin: 0 auto;
-        }
-        #pageTitle {
-            font-size: 600%;
-        }
-        .logo-container {
-            display: inline-block;
-            vertical-align: middle;
-        }
-        #inputs {
+
+        .topnav {
+            position: fixed;
+            top: 0;
+            background-color: #333;
+            overflow: hidden;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            margin-top: 20px;
+            padding: 0 16px;
+            width: 100%;
+            z-index: 1; /* Ensure the topnav appears above other elements */
         }
-        input {
-            width: 300px;
-            height: 40px;
-            font-size: 18px;
-            margin-bottom: 10px;
-            padding: 5px;
+
+        .topnav a {
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 0;
+            text-decoration: none;
+            font-size: 20px;
+        }
+
+        .topnav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .topnav a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        /* Add the following CSS to prevent color change and button behavior */
+        .topnav .icon-container:hover {
+            color: inherit;
+            cursor: default;
+        }
+
+        .topnav .icon-container {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .topnav .icon {
+            height: 100%;
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .topnav .home-btn {
+            margin-left: auto;
+            margin-right: 30px;
+        }
+
+        .topnav .logout-btn {
+            margin-right: 30px;
+        }
+
+        #messageEntry {
+            width: 85%;
+            height: 60px;
+            position: fixed;
+            bottom: 0;
+            z-index: 1; /* Ensure the message entry appears above other elements */
+        }
+
+        #sendBtn {
+            width: 14%;
+            height: 66px;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            z-index: 1; /* Ensure the send button appears above other elements */
+        }
+
+        #messagesContainer {
+            margin-top: 60px;
+            padding: 20px;
+            padding-bottom: 100px; /* Add padding at the bottom to prevent messages from being hidden by the message entry */
+        }
+
+        #messagesContainer p {
+            margin: 0;
+            padding: 0;
+            margin-bottom: 10px; /* Add margin between messages */
+        }
+
+        #messagesContainer .message {
+            background-color: #f2f2f2;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #messagesContainer .message p {
+            margin-bottom: 5px; /* Add margin between message content and user/number */
+        }
+
+        #messagesContainer .message .user-number {
+            font-size: 14px;
+            color: #888;
+        }
+
+        #messagesContainer hr {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 20px 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 id="pageTitle" align="center">
-            <span>ChatterBox</span>
-            <span class="logo-container">
-                <img src="imgs/chatterboxlogotransparent.png" alt="Chatterbox logo" width="150px" height="150px">
-            </span>
-        </h1>
+    <div class="topnav">
+        <div class="icon-container">
+            <a href="#home">
+                <img src="imgs/favicon.ico" alt="Icon" class="icon">
+            </a>
+        </div>
+        <a href="#home" class="home-btn">Home</a>
+        <a href="#logout" class="logout-btn">Log Out</a>
     </div>
-    <div id="inputs">
-        <input type="text" placeholder="Enter username" id="usernameEntry">
-        <input type="password" placeholder="Enter password" id="passwordEntry">
-        <button onclick="getInput()">Login</button>
-    </div>
+    <div id="messagesContainer"></div>
+    <input placeholder="Enter message:" type="text" id="messageEntry">
+    <button onclick="sendMsg()" id="sendBtn">Send</button>
+    <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-firestore.js"></script>
     <script>
-        function login(username) {
-            localStorage.setItem('currentUsername', username);
-            window.location.replace("home.html");
+        const firebaseConfig = {
+            apiKey: "AIzaSyANLurhmskmOgVUgo2KhREg-M_vC1KeqTQ",
+            authDomain: "wahoozle-chatterbox.firebaseapp.com",
+            projectId: "wahoozle-chatterbox",
+            storageBucket: "wahoozle-chatterbox.appspot.com",
+            messagingSenderId: "904622228699",
+            appId: "1:904622228699:web:13d1a24deb8dd49acbf8fe",
+            measurementId: "G-75JZZ8NSKX"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+
+        function readFunc() {
+            var messagesContainer = document.getElementById("messagesContainer");
+            messagesContainer.innerHTML = ""; // Clear the existing messages
+
+            // Read all messages from the messages collection and display them
+            db.collection("messages")
+                .orderBy("number", "asc")
+                .get()
+                .then(function(querySnapshot) {
+                    querySnapshot.forEach(function(doc) {
+                        var content = doc.data().content;
+                        var user = doc.data().user;
+                        var number = doc.data().number;
+
+                        // Create a div element to wrap the message
+                        var messageWrapper = document.createElement("div");
+                        messageWrapper.classList.add("message");
+
+                        // Create a paragraph element to display the message content
+                        var messageContent = document.createElement("p");
+                        messageContent.textContent = content;
+
+                        // Create a span element to display the user and number
+                        var userNumberElement = document.createElement("span");
+                        userNumberElement.classList.add("user-number");
+                        userNumberElement.innerHTML = " • <a href='https://chatterbox.wahoozlestudios.co.uk/u/" + user + "'>" + user + "</a> • #" + number;
+
+                        // Append the span element to the paragraph
+                        messageContent.appendChild(userNumberElement);
+
+                        // Append the paragraph to the message wrapper
+                        messageWrapper.appendChild(messageContent);
+
+                        // Append the message wrapper to the messages container
+                        messagesContainer.appendChild(messageWrapper);
+                    });
+                })
+                .catch(function(error) {
+                    console.log("Error getting documents: ", error);
+                });
         }
 
-        function getInput() {
-            var usernameEntryId = document.getElementById("usernameEntry");
-            var usernameTry = usernameEntryId.value;
+        function sendMsg() {
+            var entryId = document.getElementById("messageEntry");
+            var message = entryId.value;
+            var usernameTry = localStorage.getItem('usernameTry');
 
-            var passwordEntryId = document.getElementById("passwordEntry");
-            var passwordTry = passwordEntryId.value;
+            db.collection("messages")
+                .orderBy("number", "desc")
+                .limit(1)
+                .get()
+                .then(function(querySnapshot) {
+                    var largestNumber = 0;
+                    querySnapshot.forEach(function(doc) {
+                        var number = doc.data().number;
+                        if (number > largestNumber) {
+                            largestNumber = number;
+                        }
+                    });
 
-            if (usernameTry == "") {
-                console.log("Username Entry Empty");
-            } else if (passwordTry == "") {
-                console.log("Password Entry Empty");
-            } else if (usernameTry == "zacmoon" && passwordTry == "chelmer27") {
-                login(usernameTry);
-            } else if (usernameTry == "a" && passwordTry == "s") {
-                login("QuickAccess");
-            } else if(usernameTry =="cosmicitu"&&passwordTry == "idontlovekieran"){
-                login('cosmicitu')
-            } else if(usernameTry =="lulumoon"&& passwordTry == "nopass"){
-                login("lulumoon")
-            } else if(usernameTry=="cleomoon"&&passwordTry=="nopass"){
-                login("cleomoon")
-            } else {
-                console.log("Sorry, password or username incorrect")
+                    // Create a new document with incremented number value
+                    db.collection("messages").add({
+                        content: message,
+                        user: usernameTry,
+                        number: largestNumber + 1
+                    })
+                    .then(function(docRef) {
+                        console.log("Document written with ID: ", docRef.id);
+                        entryId.value = ''; // Clear the input field after sending
+                    })
+                    .catch(function(error) {
+                        console.error("Error adding document: ", error);
+                    });
+                })
+                .catch(function(error) {
+                    console.log("Error getting documents: ", error);
+                });
+        }
+
+        // Add event listener to the send button to send messages on Enter key press
+        document.getElementById("messageEntry").addEventListener("keyup", function(event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                document.getElementById("sendBtn").click();
             }
+        });
 
-            console.log(usernameTry);
-            console.log(passwordTry);
-            localStorage.setItem('usernameTry',usernameTry)
-        }
+        // Add event listener to the send button to send messages on click
+        document.getElementById("sendBtn").addEventListener("click", sendMsg);
+
+        // Real-time listener for new messages
+        db.collection("messages")
+            .orderBy("number", "asc")
+            .onSnapshot(function(querySnapshot) {
+                readFunc();
+            });
+
+        // Initial read of messages
+        readFunc();
     </script>
 </body>
 </html>
