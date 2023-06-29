@@ -91,6 +91,19 @@
         #messagesContainer p {
             margin: 0;
             padding: 0;
+            margin-bottom: 10px; /* Add margin between messages */
+        }
+        #messagesContainer .message {
+            background-color: #f2f2f2;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #messagesContainer .message p {
+            margin-bottom: 5px; /* Add margin between message content and user/number */
+        }
+        #messagesContainer .message .user-number {
+            font-size: 14px;
+            color: #888;
         }
         #messagesContainer hr {
             border: none;
@@ -128,6 +141,46 @@
         firebase.initializeApp(firebaseConfig);
         var db = firebase.firestore();
 
+        function readFunc() {
+            var messagesContainer = document.getElementById("messagesContainer");
+            messagesContainer.innerHTML = ""; 
+            db.collection("messages")
+                .orderBy("number", "asc")
+                .get()
+                .then(function(querySnapshot) {
+                    querySnapshot.forEach(function(doc) {
+                        var content = doc.data().content;
+                        var user = doc.data().user;
+                        var number = doc.data().number;
+
+                        // Create a div element to wrap the message
+                        var messageWrapper = document.createElement("div");
+                        messageWrapper.classList.add("message");
+
+                        // Create a paragraph element to display the message content
+                        var messageContent = document.createElement("p");
+                        messageContent.textContent = content;
+
+                        // Create a span element to display the user and number
+                        var userNumberElement = document.createElement("span");
+                        userNumberElement.classList.add("user-number");
+                        userNumberElement.textContent = " • "+user + " • #" + number;
+
+                        // Append the span element to the paragraph
+                        messageContent.appendChild(userNumberElement);
+
+                        // Append the paragraph to the message wrapper
+                        messageWrapper.appendChild(messageContent);
+
+                        // Append the message wrapper to the messages container
+                        messagesContainer.appendChild(messageWrapper);
+                    });
+                })
+                .catch(function(error) {
+                    console.log("Error getting documents: ", error);
+                });
+        }
+
         function sendMsg() {
             var entryId = document.getElementById("messageEntry");
             var message = entryId.value;
@@ -159,41 +212,7 @@
                     .catch(function(error) {
                         console.error("Error adding document: ", error);
                     });
-                })
-                .catch(function(error) {
-                    console.log("Error getting documents: ", error);
-                });
-        }
-
-        function readFunc() {
-            var messagesContainer = document.getElementById("messagesContainer");
-            messagesContainer.innerHTML = ""; // Clear the existing messages
-
-            // Read all messages from the messages collection and display them
-            db.collection("messages")
-                .orderBy("number", "asc")
-                .get()
-                .then(function(querySnapshot) {
-                    querySnapshot.forEach(function(doc) {
-                        var content = doc.data().content;
-                        var user = doc.data().user;
-                        var number = doc.data().number;
-
-                        // Create a paragraph element to display the message
-                        var messageElement = document.createElement("p");
-                        messageElement.textContent = content;
-
-                        // Create a span element to display the user and number
-                        var userNumberElement = document.createElement("span");
-                        userNumberElement.textContent = user + " • #" + number;
-                        userNumberElement.style.color = "#888";
-
-                        // Append the span element to the paragraph
-                        messageElement.appendChild(userNumberElement);
-
-                        // Append the paragraph to the messages container
-                        messagesContainer.appendChild(messageElement);
-                    });
+                    readFunc();
                 })
                 .catch(function(error) {
                     console.log("Error getting documents: ", error);
@@ -203,7 +222,7 @@
         readFunc();
 
         setInterval(readFunc, 10000);
-        
+
         document.addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 sendMsg();
