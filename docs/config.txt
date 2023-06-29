@@ -1,9 +1,9 @@
 const firebaseConfig = {
-            apiKey: "AIzaSyANLurhmskmOgVUgo2KhREg-M_vC1KeqTQ",
-            authDomain: "wahoozle-chatterbox.firebaseapp.com",
-            projectId: "wahoozle-chatterbox",
-            storageBucket: "wahoozle-chatterbox.appspot.com",
-            messagingSenderId: "904622228699",
-            appId: "1:904622228699:web:13d1a24deb8dd49acbf8fe",
-            measurementId: "G-75JZZ8NSKX"
-        };
+    apiKey: "AIzaSyANLurhmskmOgVUgo2KhREg-M_vC1KeqTQ",
+    authDomain: "wahoozle-chatterbox.firebaseapp.com",
+    projectId: "wahoozle-chatterbox",
+    storageBucket: "wahoozle-chatterbox.appspot.com",
+    messagingSenderId: "904622228699",
+    appId: "1:904622228699:web:13d1a24deb8dd49acbf8fe",
+    measurementId: "G-75JZZ8NSKX"
+};

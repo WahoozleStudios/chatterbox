@@ -42,9 +42,13 @@
             background-color: #4CAF50;
             color: white;
         }
+
+        /* Add the following CSS to prevent color change and button behavior */
         .topnav .icon-container:hover {
-            color: #333;
+            color: inherit;
+            cursor: default;
         }
+
         .topnav .icon-container {
             height: 100%; 
             display: flex;
@@ -108,13 +112,100 @@
     <div id="messagesContainer"></div>
     <input placeholder="Enter message:" type="text" id="messageEntry">
     <button onclick="sendMsg()" id="sendBtn">Send</button>
+    <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.0/firebase-firestore.js"></script>
     <script>
-        var sendNum = 0;
+        const firebaseConfig = {
+            apiKey: "AIzaSyANLurhmskmOgVUgo2KhREg-M_vC1KeqTQ",
+            authDomain: "wahoozle-chatterbox.firebaseapp.com",
+            projectId: "wahoozle-chatterbox",
+            storageBucket: "wahoozle-chatterbox.appspot.com",
+            messagingSenderId: "904622228699",
+            appId: "1:904622228699:web:13d1a24deb8dd49acbf8fe",
+            measurementId: "G-75JZZ8NSKX"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+
         function sendMsg() {
-            console.log("send " + sendNum);
-            sendNum++;
+            var entryId = document.getElementById("messageEntry");
+            var message = entryId.value;
+            var usernameTry = localStorage.getItem('usernameTry');
+
+            db.collection("messages")
+                .orderBy("number", "desc")
+                .limit(1)
+                .get()
+                .then(function(querySnapshot) {
+                    var largestNumber = 0;
+                    querySnapshot.forEach(function(doc) {
+                        var number = doc.data().number;
+                        if (number > largestNumber) {
+                            largestNumber = number;
+                        }
+                    });
+
+                    // Create a new document with incremented number value
+                    db.collection("messages").add({
+                        content: message,
+                        user: usernameTry,
+                        number: largestNumber + 1
+                    })
+                    .then(function(docRef) {
+                        console.log("Document written with ID: ", docRef.id);
+                        entryId.value = ''; // Clear the input field after sending
+                    })
+                    .catch(function(error) {
+                        console.error("Error adding document: ", error);
+                    });
+                })
+                .catch(function(error) {
+                    console.log("Error getting documents: ", error);
+                });
         }
 
+        function readFunc() {
+            var messagesContainer = document.getElementById("messagesContainer");
+            messagesContainer.innerHTML = ""; // Clear the existing messages
+
+            // Read all messages from the messages collection and display them
+            db.collection("messages")
+                .orderBy("number", "asc")
+                .get()
+                .then(function(querySnapshot) {
+                    querySnapshot.forEach(function(doc) {
+                        var content = doc.data().content;
+                        var user = doc.data().user;
+                        var number = doc.data().number;
+
+                        // Create a paragraph element to display the message
+                        var messageElement = document.createElement("p");
+                        messageElement.textContent = content;
+
+                        // Create a span element to display the user and number
+                        var userNumberElement = document.createElement("span");
+                        userNumberElement.textContent = user + " • #" + number;
+                        userNumberElement.style.color = "#888";
+
+                        // Append the span element to the paragraph
+                        messageElement.appendChild(userNumberElement);
+
+                        // Append the paragraph to the messages container
+                        messagesContainer.appendChild(messageElement);
+                    });
+                })
+                .catch(function(error) {
+                    console.log("Error getting documents: ", error);
+                });
+        }
+
+        // Call readFunc initially
+        readFunc();
+
+        // Call readFunc every 10 seconds
+        setInterval(readFunc, 10000);
+        
         document.addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 sendMsg();
