@@ -198,7 +198,9 @@
         function sendMsg() {
             var entryId = document.getElementById("messageEntry");
             var message = entryId.value;
-            var usernameTry = localStorage.getItem('usernameTry');
+            const urlParams = new URLSearchParams(window.location.search);
+            const usernameTry = urlParams.get('user');
+            console.log(usernameTry);
 
             var unsubscribe = db.collection("messages")
                 .orderBy("number", "asc")

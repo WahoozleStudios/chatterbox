@@ -56,8 +56,8 @@
     </div>
     <script>
         function login(username) {
-            localStorage.setItem('currentUsername', username);
-            window.location.replace("home.html");
+            var locationTo = "home.html?user=" + encodeURIComponent(username);
+            window.location.replace(locationTo);
         }
 
         function getInput() {
@@ -74,7 +74,9 @@
             } else if (usernameTry == "zacmoon" && passwordTry == "chelmer27") {
                 login(usernameTry);
             } else if (usernameTry == "a" && passwordTry == "s") {
-                login("QuickAccess");
+                login("quickaccess");
+            } else if(usernameTry =="cosmicitu"&&passwordTry=="idontlovekieran"){
+                login("cosmicitu")
             } else {
                 console.log("Incorrect Password");
             }
