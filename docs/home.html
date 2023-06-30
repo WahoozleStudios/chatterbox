@@ -207,7 +207,9 @@
             const urlParams = new URLSearchParams(window.location.search);
             const usernameTry = urlParams.get('user');
             console.log(usernameTry);
-
+            if(message==""){
+                return;
+            }
             var unsubscribe = db.collection("messages")
                 .orderBy("number", "asc")
                 .onSnapshot(function() {});
