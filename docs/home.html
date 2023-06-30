@@ -44,7 +44,6 @@
             color: white;
         }
 
-        /* Add the following CSS to prevent color change and button behavior */
         .topnav .icon-container:hover {
             color: inherit;
             cursor: default;
@@ -65,25 +64,30 @@
 
         .topnav .home-btn {
             margin-left: auto;
-            margin-right: 30px;
         }
 
         .topnav .logout-btn {
-            margin-right: 30px;
+            margin-left:30px;
+            margin-right:30px;
+        }
+
+        .topnav .reload-btn {
+            margin-left:30px;
         }
 
         #messageEntry {
             width: 80%;
-            height: 12%;
+            height: 10%;
             position: fixed;
             bottom: 0;
             left: 0;
             z-index: 1; /* Ensure the message entry appears above other elements */
+            font-size: 140%;
         }
 
         #sendBtn {
             width: 20%;
-            height: 13%;
+            height: 11%;
             position: fixed;
             bottom: 0;
             right: 0;
@@ -136,6 +140,7 @@
             </a>
         </div>
         <a href="#home" class="home-btn">Home</a>
+        <a href="reload"class="reload-btn">Reload</a>
         <a href="#logout" class="logout-btn">Log Out</a>
     </div>
     <div id="messagesContainer"></div>
