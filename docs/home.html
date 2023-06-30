@@ -117,7 +117,7 @@
         }
 
         #messagesContainer .message p {
-            margin-bottom: 5px; /* Add margin between message content and user/number */
+            margin-bottom: 5px; 
         }
 
         #messagesContainer .message .user-number {
@@ -139,9 +139,9 @@
                 <img src="imgs/favicon.ico" alt="Icon" class="icon">
             </a>
         </div>
-        <a href="#home" class="home-btn">Home</a>
-        <a href="reload"class="reload-btn">Reload</a>
-        <a href="#logout" class="logout-btn">Log Out</a>
+        <a class="home-btn">Home</a>
+        <a href="#reload" id="reloadBtn"class="reload-btn">Reload</a>
+        <a href="#logout" id="logoutBtn" class="logout-btn">Log Out</a>
     </div>
     <div id="messagesContainer"></div>
     <input placeholder="Enter message:" type="text" id="messageEntry">
@@ -252,6 +252,21 @@
             });
 
         readFunc();
+        
+        function reload() {
+            window.location.reload();
+            console.log("reload")
+        }
+
+        function logout() {
+            window.location.replace("index.html");
+        }
+
+        var reloadButton = document.getElementById("reloadBtn");
+        reloadButton.addEventListener("click", reload);
+
+        var logoutButton = document.getElementById("logoutBtn");
+        logoutButton.addEventListener("click",logout);
     </script>
 </body>
 </html>
