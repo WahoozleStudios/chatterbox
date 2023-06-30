@@ -71,46 +71,56 @@
         .topnav .logout-btn {
             margin-right: 30px;
         }
+
         #messageEntry {
-            width: 85%;
+            width: 80%;
             height: 60px;
             position: fixed;
             bottom: 0;
+            left: 0;
             z-index: 1; /* Ensure the message entry appears above other elements */
         }
 
         #sendBtn {
-            width: 14%;
+            width: 20%;
             height: 66px;
             position: fixed;
             bottom: 0;
             right: 0;
             z-index: 1; /* Ensure the send button appears above other elements */
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
         }
+
         #messagesContainer {
             margin-top: 60px;
             padding: 20px;
-            padding-bottom: 100px; /* Add padding at the bottom to prevent messages from being hidden by the message entry */
+            padding-bottom: 160px; /* Add padding at the bottom to prevent messages from being hidden by the message entry and send button */
         }
+
         #messagesContainer p {
             margin: 0;
             padding: 0;
             margin-bottom: 10px; /* Add margin between messages */
         }
+
         #messagesContainer .message {
             background-color: #f2f2f2;
             padding: 10px;
             border-radius: 5px;
         }
+
         #messagesContainer .message p {
             margin-bottom: 5px; /* Add margin between message content and user/number */
         }
+
         #messagesContainer .message .user-number {
             font-size: 14px;
             color: #888;
-            text-decoration: underline;
-            cursor: pointer;
         }
+
         #messagesContainer hr {
             border: none;
             border-top: 1px solid #ccc;
