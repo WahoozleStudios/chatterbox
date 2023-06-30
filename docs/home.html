@@ -267,6 +267,11 @@
 
         var logoutButton = document.getElementById("logoutBtn");
         logoutButton.addEventListener("click",logout);
+
+        setInterval(function() {
+            console.log('Reading');
+            readFunc();
+        }, 10000);
     </script>
 </body>
 </html>
