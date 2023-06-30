@@ -39,11 +39,20 @@
             padding: 5px;
         }
         #login {
-            width:30%;
-            height:40px;
+            width: 30%;
+            height: 40px;
             font-size: 18px;
             margin-bottom: 10px;
             padding: 5px;
+        }
+
+        /* Media query for mobile devices */
+        @media only screen and (max-width: 767px) {
+            input, #login {
+                width: 80%; /* Adjust the width as needed */
+                height: 50px; /* Adjust the height as needed */
+                font-size: 20px; /* Adjust the font size as needed */
+            }
         }
     </style>
 </head>
@@ -56,10 +65,10 @@
             </span>
         </h1>
     </div>
-    <div id="inputs">
-        <input type="text" placeholder="Enter username" id="usernameEntry">
-        <input type="password" placeholder="Enter password" id="passwordEntry">
-        <button id="login" onclick="getInput()">Login</button>
+    <div id="inputs" class="allinputs">
+        <input type="text" class="flex-item" placeholder="Enter username" id="usernameEntry">
+        <input type="password" class="flex-item" placeholder="Enter password" id="passwordEntry">
+        <button id="login" class="flex-item" onclick="getInput()">Login</button>
     </div>
     <script>
         function login(username) {
