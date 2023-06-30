@@ -216,10 +216,10 @@
                             largestNumber = number;
                         }
                     });
-
+                    var usernameToSend = usernameTry
                     db.collection("messages").add({
                         content: message,
-                        user: usernameTry,
+                        user: usernameToSend,
                         number: largestNumber + 1
                     })
                     .then(function(docRef) {
